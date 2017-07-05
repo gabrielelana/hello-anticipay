@@ -11,14 +11,14 @@ defmodule Anticipay.HTTP do
 
   get "/ping" do
     conn
-    |> put_resp_header("content-type", "plain/text")
+    |> put_resp_header("content-type", "text/plain")
     |> send_resp(200, "pong")
   end
 
   post "/counters/:name" do
     %{"counter" => counter} = count_up(name)
     conn
-    |> put_resp_header("content-type", "plain/text")
+    |> put_resp_header("content-type", "text/plain")
     |> send_resp(200, "#{counter}")
   end
 
