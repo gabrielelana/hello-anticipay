@@ -14,14 +14,14 @@ defmodule Anticipay.SkeletonTest do
   end
 
   test "POST /counters/:name" do
-    conn = conn(:post, "/counters/1") |> call
+    conn = conn(:post, "/counters/1/up") |> call
     assert conn.status == 200
-    assert conn.resp_body == "1"
+    assert conn.resp_body == Poison.encode!(%{counter: 1})
 
-    conn(:post, "/counters/1") |> call
-    conn(:post, "/counters/1") |> call
-    conn = conn(:post, "/counters/1") |> call
-    assert conn.resp_body == "4"
+    conn(:post, "/counters/1/up") |> call
+    conn(:post, "/counters/1/up") |> call
+    conn = conn(:post, "/counters/1/up") |> call
+    assert conn.resp_body == Poison.encode!(%{counter: 4})
   end
 
   test "anything else returns 404" do

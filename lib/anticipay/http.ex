@@ -15,17 +15,37 @@ defmodule Anticipay.HTTP do
     |> send_resp(200, "pong")
   end
 
-  post "/counters/:name" do
-    %{"counter" => counter} = count_up(name)
+  get "/counters/:name" do
+    %{"counter" => counter} = counter(name)
     conn
-    |> put_resp_header("content-type", "text/plain")
-    |> send_resp(200, "#{counter}")
+    |> put_resp_header("content-type", "application/json")
+    |> send_resp(200, Poison.encode!(%{counter: counter}))
   end
 
-  defp count_up(counter_name) do
+  post "/counters/:name/up" do
+    %{"counter" => counter} = count_up(name, 1)
+    conn
+    |> put_resp_header("content-type", "application/json")
+    |> send_resp(200, Poison.encode!(%{counter: counter}))
+  end
+
+  post "/counters/:name/down" do
+    %{"counter" => counter} = count_up(name, -1)
+    conn
+    |> put_resp_header("content-type", "application/json")
+    |> send_resp(200, Poison.encode!(%{counter: counter}))
+  end
+
+  defp count_up(counter_name, amount) do
     collection = "counters"
     query = %{name: counter_name}
-    Mongo.update_one(Anticipay.MongoDB, collection, query, %{"$inc": %{counter: 1}}, upsert: true)
+    Mongo.update_one(Anticipay.MongoDB, collection, query, %{"$inc": %{counter: amount}}, upsert: true)
+    Mongo.find(Anticipay.MongoDB, collection, query) |> Enum.to_list |> List.first
+  end
+
+  defp counter(counter_name) do
+    collection = "counters"
+    query = %{name: counter_name}
     Mongo.find(Anticipay.MongoDB, collection, query) |> Enum.to_list |> List.first
   end
 
