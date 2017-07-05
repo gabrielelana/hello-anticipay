@@ -3,8 +3,22 @@ sudo: enabled
 
 elixir: 1.4.4
 otp_release: 19.1
+node_js: 6.10.3
 
 services: mongodb
+
+install:
+  - npm install
+  - mix local.rkebar --force
+  - mix local.hex --force
+  - mix deps.get
+
+script:
+  - mix test
+  # npm run test
+
+before_deploy:
+  - npm run build
 
 deploy:
   provider: heroku
