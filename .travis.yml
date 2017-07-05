@@ -1,5 +1,7 @@
 language: elixir
+sudo: enabled
+
 elixir: 1.4.4
 otp_release: 19.1
+
 services: mongodb
-sudo: enabled
